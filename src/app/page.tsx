@@ -1,70 +1,66 @@
 'use client'
-import { useState } from "react";
+import React, { useState } from "react";
+import { AddEntry, EditEntry, DeleteEntry } from "@/utils";
 
 export default function Home() {
   const [list, setList] = useState(JSON.parse(localStorage.getItem("list") || "[]"));
+  const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const toggleFormVisibility = () => {
+    setIsFormVisible(!isFormVisible);
+  }
 
   return (
     <div>
-      <Form setList={setList}/>
+      <button onClick={toggleFormVisibility}>Add Todo</button>
+      {isFormVisible && <Form setList={setList} closeForm={toggleFormVisibility} />}
       <List list={list} setList={setList} />
     </div>
   );
 }
 
-type Entry = {
+export type Entry = {
+  id: string;
   text: string;
   status: "pending" | "completed";
 }
 
-function List({ list, setList }: { list: Entry[], setList: (list: Entry[]) => void }) {
+function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | undefined) => void }) {
 
-  function deleteEntry(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    const local: string | null = localStorage.getItem("list");
-    if (local) {
-      const list = JSON.parse(local);
-      const updatedList = list.filter((entry: Entry) => entry.text !== e.target.parentElement?.firstChild?.textContent);
-      localStorage.setItem("list", JSON.stringify(updatedList));
-      const updatedListState: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
-      setList(updatedListState);
-    }
+  function onEdit(id: string, newText: string) {
+    const updatedListState = EditEntry(id, newText);
+    setList(updatedListState);
+  }
+
+  function onDelete(id: string) {
+    const updatedListState = DeleteEntry(id);
+    setList(updatedListState);
   }
 
   return (
     <ul>
-      {list.map((entry: Entry, index: number) => (
-        <div key={index}>
+      {list.map((entry: Entry) => (
+        <div key={entry.id}>
           <li>{entry.text}</li>
-          <button onClick={deleteEntry}>Delete</button>
+          <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button>
+          <button onClick={() => onDelete(entry.id)}>Delete</button>
         </div>
       ))}
     </ul>
   )
 }
 
-function Form({ setList }: { setList: (list: Entry[]) => void }) {
+function Form({ setList, closeForm }: { setList: (list: Entry[]) => void, closeForm: () => void }) {
   const [text, setText] = useState("");
 
-  function AddEntry(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!text.trim()) return;
-    const local: string | null = localStorage.getItem("list");
-    if (local) {
-      const list = JSON.parse(local);
-      localStorage.setItem("list", JSON.stringify([...list, {text, status: "pending"}]));
-      const updatedList: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
-      setList(updatedList);
-    } else {
-      localStorage.setItem("list", JSON.stringify([{text, status: "pending"}]));
-      const updatedList: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
-      setList(updatedList);
-    }
-    setText("");
+    AddEntry(e, text, setList, setText);
+    closeForm();
   }
 
   return (
-    <form onSubmit={AddEntry}>
+    <form onSubmit={handleSubmit}>
       <input 
         type="text"
         placeholder="Add a todo"
