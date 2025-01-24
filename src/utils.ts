@@ -31,6 +31,17 @@ export function EditEntry(id: string, newText: string) {
     }
 }
 
+export function CheckEntry(id: string) {
+    const local: string | null = localStorage.getItem("list");
+    if (local) {
+        const list: Entry[] = JSON.parse(local);
+        const updatedList = list.map((entry: Entry) => {
+            return entry.id === id ? { ...entry, status: entry.status === "completed" ? "pending" : "completed" } : entry;
+        });
+        localStorage.setItem("list", JSON.stringify(updatedList));
+    }
+}
+
 export function DeleteEntry(id: string) {
     const local: string | null = localStorage.getItem("list");
     if (local) {

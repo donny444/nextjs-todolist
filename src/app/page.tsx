@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from "react";
-import { AddEntry, EditEntry, DeleteEntry } from "@/utils";
+import { AddEntry, EditEntry, DeleteEntry, CheckEntry } from "@/utils";
 
 export default function Home() {
   const [list, setList] = useState(JSON.parse(localStorage.getItem("list") || "[]"));
@@ -41,6 +41,15 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
     <ul>
       {list.map((entry: Entry) => (
         <div key={entry.id}>
+          {/* <div>{ entry.status === "completed" ? : }</div> */}
+          <input 
+            type="checkbox" 
+            checked={entry.status === "completed"}
+            onChange={() => {
+              CheckEntry(entry.id);
+              setList(JSON.parse(localStorage.getItem("list") || "[]"));
+            }}
+          />
           <li>{entry.text}</li>
           <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button>
           <button onClick={() => onDelete(entry.id)}>Delete</button>
