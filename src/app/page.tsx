@@ -39,22 +39,47 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
 
   return (
     <ul>
-      {list.map((entry: Entry) => (
-        <div key={entry.id}>
-          {/* <div>{ entry.status === "completed" ? : }</div> */}
-          <input 
-            type="checkbox" 
-            checked={entry.status === "completed"}
-            onChange={() => {
-              CheckEntry(entry.id);
-              setList(JSON.parse(localStorage.getItem("list") || "[]"));
-            }}
-          />
-          <li>{entry.text}</li>
-          <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button>
-          <button onClick={() => onDelete(entry.id)}>Delete</button>
+      <div>
+        <h2>Pending</h2>
+        <div>
+          {list.filter(entry => entry.status === "pending").map((entry: Entry) => (
+            <div key={entry.id}>
+              <input
+                type="checkbox"
+                checked={entry.status === "completed"}
+                onChange={() => {
+                  CheckEntry(entry.id);
+                  setList(JSON.parse(localStorage.getItem("list") || "[]"));
+                }}
+              />
+              <li>{entry.text}</li>
+              <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button>
+              <button onClick={() => onDelete(entry.id)}>Delete</button>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
+      <hr />
+      <div>
+        <h2>Completed</h2>
+        <div>
+          {list.filter(entry => entry.status === "completed").map((entry: Entry) => (
+            <div key={entry.id}>
+              <input
+                type="checkbox"
+                checked={entry.status === "completed"}
+                onChange={() => {
+                  CheckEntry(entry.id);
+                  setList(JSON.parse(localStorage.getItem("list") || "[]"));
+                }}
+              />
+              <li>{entry.text}</li>
+              <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button>
+              <button onClick={() => onDelete(entry.id)}>Delete</button>
+            </div>
+          ))}
+        </div>
+      </div>
     </ul>
   )
 }
@@ -70,7 +95,7 @@ function Form({ setList, closeForm }: { setList: (list: Entry[]) => void, closeF
 
   return (
     <form onSubmit={handleSubmit}>
-      <input 
+      <input
         type="text"
         placeholder="Add a todo"
         value={text}
