@@ -1,11 +1,20 @@
 'use client'
 import Image from "next/image";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { AddEntry, EditEntry, DeleteEntry, CheckEntry } from "@/utils";
 
 export default function Home() {
   const [list, setList] = useState(JSON.parse(localStorage.getItem("list") || "[]"));
   const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!localStorage.getItem("profile")) {
+      router.push("/signup");
+    }
+  });
 
   const toggleFormVisibility = () => {
     setIsFormVisible(!isFormVisible);
