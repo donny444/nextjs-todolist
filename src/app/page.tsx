@@ -21,7 +21,7 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-light-blue-100 min-h-screen p-4">
+    <div className="bg-light-blue-100 min-h-screen p-4 max-w-lg mx-auto">
       <button onClick={toggleFormVisibility} className="bg-blue-500 text-white px-4 py-2 rounded">
         Add Todo
       </button>
@@ -40,13 +40,11 @@ export type Entry = {
 function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | undefined) => void }) {
 
   function onEdit(id: string, newText: string) {
-    const updatedListState = EditEntry(id, newText);
-    setList(updatedListState);
+    EditEntry(id, newText, setList);
   }
 
   function onDelete(id: string) {
-    const updatedListState = DeleteEntry(id);
-    setList(updatedListState);
+    DeleteEntry(id, setList);
   }
 
   return (
@@ -61,9 +59,9 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
                   type="checkbox"
                   checked={entry.status === "completed"}
                   onChange={() => {
-                    CheckEntry(entry.id);
-                    setList(JSON.parse(localStorage.getItem("list") || "[]"));
+                    CheckEntry(entry.id, setList);
                   }}
+                  className="w-5 h-5"
                 />
                 <li className="ml-2">{entry.text}</li>
               </div>
@@ -88,12 +86,11 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
                   type="checkbox"
                   checked={entry.status === "completed"}
                   onChange={() => {
-                    CheckEntry(entry.id);
-                    setList(JSON.parse(localStorage.getItem("list") || "[]"));
+                    CheckEntry(entry.id, setList);
                   }}
-                  className="w-6 h-6 text-green-500"
+                  className="w-5 h-5"
                 />
-                <li>{entry.text}</li>
+                <li className="ml-2">{entry.text}</li>
               </div>
               <div className="flex space-x-2">
                 <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)} />
@@ -114,7 +111,7 @@ function Form({ setList, closeForm }: { setList: (list: Entry[]) => void, closeF
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    AddEntry(e, text, setList, setText);
+    AddEntry(text, setList, setText);
     closeForm();
   }
 
@@ -127,10 +124,30 @@ function Form({ setList, closeForm }: { setList: (list: Entry[]) => void, closeF
           placeholder="Add a todo"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full p-2 border rounded m-4"
+          className="w-full p-2 border rounded mt-6 mb-4"
         />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Add Todo</button>
       </div>
+    </form>
+  )
+}
+
+function EditForm({ id, text, onEdit }: { id: string, text: string, onEdit: (id: string, newText: string) => void }) {
+  const [newText, setNewText] = useState(text);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    onEdit(id, newText);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={newText}
+        onChange={(e) => setNewText(e.target.value)}
+      />
+      <button type="submit">Save</button>
     </form>
   )
 }
