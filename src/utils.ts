@@ -1,7 +1,6 @@
 import { Entry } from "@/app/page";
 
-export function AddEntry(e: React.FormEvent<HTMLFormElement>, text: string, setList: (list: Entry[]) => void, setText: (text: string) => void) {
-    e.preventDefault();
+export function AddEntry(text: string, setList: (list: Entry[]) => void, setText: (text: string) => void) {
     if (!text.trim()) return;
     const local: string | null = localStorage.getItem("list");
     const newEntry: Entry = { id: Date.now().toString(), text, status: "pending" };
@@ -18,7 +17,7 @@ export function AddEntry(e: React.FormEvent<HTMLFormElement>, text: string, setL
     setText("");
 }
 
-export function EditEntry(id: string, newText: string) {
+export function EditEntry(id: string, newText: string, setList: (list: Entry[]) => void) {
     const local: string | null = localStorage.getItem("list");
     if (local) {
         const list: Entry[] = JSON.parse(local);
@@ -27,11 +26,11 @@ export function EditEntry(id: string, newText: string) {
         });
         localStorage.setItem("list", JSON.stringify(updatedList));
         const updatedListState: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
-        return updatedListState;
+        setList(updatedListState);
     }
 }
 
-export function CheckEntry(id: string) {
+export function CheckEntry(id: string, setList: (list: Entry[]) => void) {
     const local: string | null = localStorage.getItem("list");
     if (local) {
         const list: Entry[] = JSON.parse(local);
@@ -39,16 +38,17 @@ export function CheckEntry(id: string) {
             return entry.id === id ? { ...entry, status: entry.status === "completed" ? "pending" : "completed" } : entry;
         });
         localStorage.setItem("list", JSON.stringify(updatedList));
+        setList(JSON.parse(localStorage.getItem("list") || "[]"));
     }
 }
 
-export function DeleteEntry(id: string) {
+export function DeleteEntry(id: string, setList: (list: Entry[]) => void) {
     const local: string | null = localStorage.getItem("list");
     if (local) {
         const list = JSON.parse(local);
         const updatedList = list.filter((entry: Entry) => entry.id !== id);
         localStorage.setItem("list", JSON.stringify(updatedList));
         const updatedListState: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
-        return updatedListState;
+        setList(updatedListState);
     }
 }
