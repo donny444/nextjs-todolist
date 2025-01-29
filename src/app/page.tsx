@@ -38,6 +38,7 @@ export type Entry = {
 }
 
 function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | undefined) => void }) {
+  const [filter, setFilter] = useState("all");
 
   function onEdit(id: string, newText: string) {
     EditEntry(id, newText, setList);
@@ -48,61 +49,36 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
   }
 
   return (
-    <ul>
-      <div>
-        <h2 className="text-2xl font-bold">Pending</h2>
-        <div>
-          {list.filter(entry => entry.status === "pending").map((entry: Entry) => (
-            <div key={entry.id} className="bg-white shadow-md rounded p-4 mb-4 flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={entry.status === "completed"}
-                  onChange={() => {
-                    CheckEntry(entry.id, setList);
-                  }}
-                  className="w-5 h-5"
-                />
-                <li className="ml-2">{entry.text}</li>
-              </div>
-              <div className="flex space-x-2">
-                <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)} />
-                <Image src="/close.svg" width={24} height={24} alt="delete" onClick={() => onDelete(entry.id)} />
-                {/* <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button> */}
-                {/* <button onClick={() => onDelete(entry.id)}>Delete</button> */}
-              </div>
+    <div>
+      <select className="w-full p-2 border rounded my-4" onChange={(e) => setFilter(e.target.value)}>
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+      </select>
+      <ul>
+        {list.filter(entry => entry.status === filter || filter === "all").map((entry: Entry) => (
+          <div key={entry.id} className="bg-white shadow-md rounded p-4 mb-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={entry.status === "completed"}
+                onChange={() => {
+                  CheckEntry(entry.id, setList);
+                }}
+                className="w-5 h-5"
+              />
+              <li className="ml-2">{entry.text}</li>
             </div>
-          ))}
-        </div>
-      </div>
-      <hr className="border-t-2 border-gray-400" />
-      <div>
-        <h2 className="text-2xl font-bold">Completed</h2>
-        <div>
-          {list.filter(entry => entry.status === "completed").map((entry: Entry) => (
-            <div key={entry.id} className="bg-white shadow-md rounded p-4 mb-4 flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={entry.status === "completed"}
-                  onChange={() => {
-                    CheckEntry(entry.id, setList);
-                  }}
-                  className="w-5 h-5"
-                />
-                <li className="ml-2">{entry.text}</li>
-              </div>
-              <div className="flex space-x-2">
-                <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)} />
-                <Image src="/close.svg" width={24} height={24} alt="delete" onClick={() => onDelete(entry.id)} />
-                {/* <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button> */}
-                {/* <button onClick={() => onDelete(entry.id)}>Delete</button> */}
-              </div>
+            <div className="flex space-x-2">
+              <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)} />
+              <Image src="/close.svg" width={24} height={24} alt="delete" onClick={() => onDelete(entry.id)} />
+              {/* <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button> */}
+              {/* <button onClick={() => onDelete(entry.id)}>Delete</button> */}
             </div>
-          ))}
-        </div>
-      </div>
-    </ul>
+          </div>
+        ))}
+      </ul>
+    </div>
   )
 }
 
@@ -128,26 +104,6 @@ function Form({ setList, closeForm }: { setList: (list: Entry[]) => void, closeF
         />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Add Todo</button>
       </div>
-    </form>
-  )
-}
-
-function EditForm({ id, text, onEdit }: { id: string, text: string, onEdit: (id: string, newText: string) => void }) {
-  const [newText, setNewText] = useState(text);
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    onEdit(id, newText);
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={newText}
-        onChange={(e) => setNewText(e.target.value)}
-      />
-      <button type="submit">Save</button>
     </form>
   )
 }
