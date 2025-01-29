@@ -38,7 +38,8 @@ export function CheckEntry(id: string, setList: (list: Entry[]) => void) {
             return entry.id === id ? { ...entry, status: entry.status === "completed" ? "pending" : "completed" } : entry;
         });
         localStorage.setItem("list", JSON.stringify(updatedList));
-        setList(JSON.parse(localStorage.getItem("list") || "[]"));
+        const updatedListState: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
+        setList(updatedListState);
     }
 }
 
