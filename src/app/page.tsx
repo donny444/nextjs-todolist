@@ -39,9 +39,10 @@ export type Entry = {
 
 function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | undefined) => void }) {
   const [filter, setFilter] = useState("all");
+  const [isEditVisible, setIsEditVisible] = useState(false);
 
-  function onEdit(id: string, newText: string) {
-    EditEntry(id, newText, setList);
+  const toggleEditForm = () => {
+    setIsEditVisible(!isEditVisible);
   }
 
   function onDelete(id: string) {
@@ -69,12 +70,13 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
               />
               <li className="ml-2">{entry.text}</li>
             </div>
-            <div className="flex space-x-2">
-              <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)} />
+            <div className="flex">
+              <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={toggleEditForm} />
               <Image src="/close.svg" width={24} height={24} alt="delete" onClick={() => onDelete(entry.id)} />
               {/* <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button> */}
               {/* <button onClick={() => onDelete(entry.id)}>Delete</button> */}
             </div>
+            {isEditVisible && <EditForm id={entry.id} text={entry.text} setList={setList} closeEdit={toggleEditForm} />}
           </div>
         ))}
       </ul>
@@ -101,8 +103,36 @@ function Form({ setList, closeForm }: { setList: (list: Entry[]) => void, closeF
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="w-full p-2 border rounded mt-6 mb-4"
+          required
         />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Add Todo</button>
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Add</button>
+      </div>
+    </form>
+  )
+}
+
+function EditForm({ id, text, setList, closeEdit }: { id: string, text: string, setList: (list: Entry[]) => void, closeEdit: () => void }) {
+  const [newText, setNewText] = useState(text);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    EditEntry(id, newText, setList);
+    closeEdit();
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30">
+      <div className="bg-white p-4 rounded relative">
+        <Image src="/cancel.svg" width={24} height={24} alt="close" onClick={closeEdit} className="absolute top-2 right-2 cursor-pointer" />
+        <input
+          type="text"
+          placeholder="Edit the todo"
+          value={newText}
+          onChange={(e) => setNewText(e.target.value)}
+          className="w-full p-2 border rounded mt-6 mb-4"
+          required
+        />
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Save</button>
       </div>
     </form>
   )
