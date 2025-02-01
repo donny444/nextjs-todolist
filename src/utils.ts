@@ -10,7 +10,7 @@ export function AddEntry(text: string, setList: (list: Entry[]) => void, setText
         const updatedList: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
         setList(updatedList);
     } else {
-        localStorage.setItem("list", JSON.stringify([{ text, status: "pending" }]));
+        localStorage.setItem("list", JSON.stringify([{ id: Date.now().toString(), text, status: "pending" }]));
         const updatedList: Entry[] = JSON.parse(localStorage.getItem("list") || "[]");
         setList(updatedList);
     }

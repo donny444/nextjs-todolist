@@ -40,9 +40,13 @@ export type Entry = {
 function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | undefined) => void }) {
   const [filter, setFilter] = useState("all");
   const [isEditVisible, setIsEditVisible] = useState(false);
+  const [editEntry, setEditEntry] = useState({ id: "", text: "" });
 
-  const toggleEditForm = () => {
+  const toggleEditForm = (id?: string, text?: string) => {
     setIsEditVisible(!isEditVisible);
+    if (id && text) {
+      setEditEntry({ id, text });
+    }
   }
 
   function onDelete(id: string) {
@@ -71,15 +75,15 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
               <li className="ml-2">{entry.text}</li>
             </div>
             <div className="flex">
-              <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={toggleEditForm} />
+              <Image src="/pen.svg" width={24} height={24} alt="edit" onClick={() => toggleEditForm(entry.id, entry.text)} />
               <Image src="/close.svg" width={24} height={24} alt="delete" onClick={() => onDelete(entry.id)} />
               {/* <button onClick={() => onEdit(entry.id, prompt("Edit entry:", entry.text) || entry.text)}>Edit</button> */}
               {/* <button onClick={() => onDelete(entry.id)}>Delete</button> */}
             </div>
-            {isEditVisible && <EditForm id={entry.id} text={entry.text} setList={setList} closeEdit={toggleEditForm} />}
           </div>
         ))}
       </ul>
+      {isEditVisible && <EditForm id={editEntry.id} text={editEntry.text} setList={setList} closeEdit={toggleEditForm} />}
     </div>
   )
 }
