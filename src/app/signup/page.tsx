@@ -40,6 +40,7 @@ export default function Signup() {
                             value={firstName}
                             onChange={(e) => setFirstname(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
+                            required
                         />
                     </div>
                     <div>
@@ -49,6 +50,7 @@ export default function Signup() {
                             value={lastName}
                             onChange={(e) => setLastname(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
+                            required
                         />
                     </div>
                     <div>
@@ -58,6 +60,7 @@ export default function Signup() {
                             value={age}
                             onChange={(e) => setAge(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
+                            required
                         />
                     </div>
                     <div>
@@ -67,6 +70,7 @@ export default function Signup() {
                             value={birthDate}
                             onChange={(e) => setBirthDate(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
+                            required
                         />
                     </div>
                     <div>
@@ -74,10 +78,13 @@ export default function Signup() {
                         <select
                             onChange={(e) => setSex(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
+                            defaultValue={""}
+                            required
                         >
                             <option value="male">Male</option>
                             <option value="female">Female</option>
                             <option value="other">Other</option>
+                            <option value="">Prefer not to say</option>
                         </select>
                     </div>
                     <input
