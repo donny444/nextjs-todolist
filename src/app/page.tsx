@@ -41,6 +41,7 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
   const [filter, setFilter] = useState("all");
   const [isEditVisible, setIsEditVisible] = useState(false);
   const [editEntry, setEditEntry] = useState({ id: "", text: "" });
+  const [search, setSearch] = useState("");
 
   const toggleEditForm = (id?: string, text?: string) => {
     setIsEditVisible(!isEditVisible);
@@ -55,13 +56,14 @@ function List({ list, setList }: { list: Entry[], setList: (list: Entry[] | unde
 
   return (
     <div>
+      <input type="text" placeholder="Search" className="w-full p-2 border rounded mt-4" onChange={(e) => setSearch(e.target.value)} />
       <select className="w-full p-2 border rounded my-4" onChange={(e) => setFilter(e.target.value)}>
         <option value="all">All</option>
         <option value="pending">Pending</option>
         <option value="completed">Completed</option>
       </select>
       <ul>
-        {list.filter(entry => entry.status === filter || filter === "all").map((entry: Entry) => (
+        {list.filter(entry => (entry.status === filter || filter === "all") && entry.text.includes(search)).map((entry: Entry) => (
           <div key={entry.id} className="bg-white shadow-md rounded p-4 mb-4 flex items-center justify-between">
             <div className="flex items-center">
               <input
